@@ -181,43 +181,34 @@ const Dashboard = () => {
                 </div>
                 <h2 className="text-lg font-semibold text-foreground">Channel Performance</h2>
               </div>
+              <Badge variant="secondary">{agents?.length || 0} ESPs</Badge>
             </div>
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-sm">
-                <thead>
-                  <tr>
-                    <th className="text-left py-2 px-4 bg-muted font-bold">TYPE</th>
-                    <th className="text-left py-2 px-4 bg-muted font-bold">Value</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    "Opening ESP Count",
-                    "New ESP Count",
-                    "Existing ESP Count",
-                    "Churned ESP Count",
-                    "Closing ESP Count",
-                    "Sales (New ESP)",
-                    "Sales (Existing ESP)",
-                    "Sales (Total ESP)",
-                    "Prod/ESP (New ESP)",
-                    "Prod/ESP (Existing ESP)",
-                    "Prod/ESP (Total ESP)",
-                  ].map((label) => (
-                    <tr key={label} className="border-b border-border last:border-0">
-                      <td className="py-2 px-4 font-medium text-foreground">{label}</td>
-                      <td className="py-2 px-4">
-                        <input
-                          type="number"
-                          className="w-32 px-2 py-1 border rounded bg-background text-foreground"
-                          placeholder="Enter value"
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+
+            {agents && agents.length > 0 ? (
+              <div className="space-y-4">
+                {agents.map((agent) => (
+                  <div
+                    key={agent.id}
+                    className="flex items-center justify-between py-3 border-b border-border last:border-0"
+                  >
+                    <div>
+                      <p className="font-medium text-foreground">{agent.name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {agent.status === "active" ? "Active" : "Inactive"}
+                      </p>
+                    </div>
+                    <Badge variant="secondary" className="font-mono">
+                      {agent.total_sales} sales
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <p>No ESPs yet</p>
+              </div>
+            )}
           </Card>
         </div>
       </main>
