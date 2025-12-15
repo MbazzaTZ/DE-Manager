@@ -153,7 +153,7 @@ const Inventory = () => {
               <DialogHeader>
                 <DialogTitle>Add Stock Item</DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleAddItem} className="space-y-4">
+              <form onSubmit={handleAddItem} className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
                 <div className="space-y-2">
                   <Label>Smartcard</Label>
                   <Input

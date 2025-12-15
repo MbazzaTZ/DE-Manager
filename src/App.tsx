@@ -11,6 +11,7 @@ import Inventory from "./pages/Inventory";
 import Agents from "./pages/Agents";
 import Sales from "./pages/Sales";
 import NotFound from "./pages/NotFound";
+import ChannelManagement from "./pages/ChannelManagement";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +68,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <Sales />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/channel-management"
+        element={
+          <ProtectedRoute>
+            <ChannelManagement />
           </ProtectedRoute>
         }
       />

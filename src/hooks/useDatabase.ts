@@ -228,6 +228,27 @@ export const useDeleteAgent = () => {
   });
 };
 
+export const useBulkCreateAgents = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (agents: { name: string; phone?: string; email?: string }[]) => {
+      const { data, error } = await supabase
+        .from("agents")
+        .insert(agents)
+        .select();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["agents"] });
+      toast({ title: "Success", description: `${data.length} agents imported successfully` });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+};
+
 // Inventory hooks
 export const useInventory = () => {
   return useQuery({

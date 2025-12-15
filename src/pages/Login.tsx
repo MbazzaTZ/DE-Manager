@@ -71,7 +71,7 @@ const Login = () => {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input

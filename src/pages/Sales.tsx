@@ -38,6 +38,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  CommandDialog,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from "@/components/ui/command";
+import {
   useSales,
   useCreateSale,
   useUpdateSale,
@@ -58,6 +66,7 @@ const Sales = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [addSaleOpen, setAddSaleOpen] = useState(false);
   const [paidFilter, setPaidFilter] = useState<string>("all");
+  const [agentSearchOpen, setAgentSearchOpen] = useState(false);
   const [isManualEntry, setIsManualEntry] = useState(false);
 
   const [newSale, setNewSale] = useState({
@@ -65,7 +74,7 @@ const Sales = () => {
     agent_id: "",
     sale_type: "normal" as SaleType,
     package_type: "",
-    sale_price: "",
+    // sale_price removed
     customer_name: "",
     customer_phone: "",
     manual_smartcard: "",
@@ -92,16 +101,12 @@ const Sales = () => {
   const totalSales = sales.length;
   const paidSales = sales.filter((s) => s.is_paid).length;
   const unpaidSales = sales.filter((s) => !s.is_paid).length;
-  const totalRevenue = sales
-    .filter((s) => s.is_paid)
-    .reduce((sum, s) => sum + (s.sale_price || 0), 0);
+  // totalRevenue removed
 
   const handlePackageChange = (packageValue: string) => {
-    const pkg = DSTV_PACKAGES.find((p) => p.value === packageValue);
     setNewSale({
       ...newSale,
       package_type: packageValue,
-      sale_price: pkg && pkg.price > 0 ? pkg.price.toString() : newSale.sale_price,
     });
   };
 
@@ -112,7 +117,7 @@ const Sales = () => {
       agent_id: newSale.agent_id || undefined,
       sale_type: newSale.sale_type,
       package_type: newSale.package_type || undefined,
-      sale_price: newSale.sale_price ? parseFloat(newSale.sale_price) : undefined,
+      // sale_price removed
       customer_name: newSale.customer_name || undefined,
       customer_phone: newSale.customer_phone || undefined,
       manual_smartcard: isManualEntry ? newSale.manual_smartcard : undefined,
@@ -123,7 +128,7 @@ const Sales = () => {
       agent_id: "",
       sale_type: "normal",
       package_type: "",
-      sale_price: "",
+      // sale_price removed
       customer_name: "",
       customer_phone: "",
       manual_smartcard: "",
@@ -166,7 +171,7 @@ const Sales = () => {
               <DialogHeader>
                 <DialogTitle>Record Sale</DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleAddSale} className="space-y-4">
+              <form onSubmit={handleAddSale} className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
                 {/* Manual Entry Toggle */}
                 <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                   <div>
@@ -239,23 +244,40 @@ const Sales = () => {
 
                 <div className="space-y-2">
                   <Label>Agent</Label>
-                  <Select
-                    value={newSale.agent_id}
-                    onValueChange={(v) => setNewSale({ ...newSale, agent_id: v })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select agent" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {agents
-                        .filter((a) => a.status === "active")
-                        .map((agent) => (
-                          <SelectItem key={agent.id} value={agent.id}>
-                            {agent.name}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
+                  <div>
+                    <CommandDialog open={agentSearchOpen} onOpenChange={setAgentSearchOpen}>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full justify-between"
+                        onClick={() => setAgentSearchOpen(true)}
+                      >
+                        {newSale.agent_id
+                          ? agents.find((a) => a.id === newSale.agent_id)?.name || "Select agent"
+                          : "Select agent"}
+                      </Button>
+                      <CommandInput placeholder="Search agent by name..." autoFocus />
+                      <CommandList>
+                        <CommandEmpty>No agents found.</CommandEmpty>
+                        <CommandGroup>
+                          {agents
+                            .filter((a) => a.status === "active")
+                            .map((agent) => (
+                              <CommandItem
+                                key={agent.id}
+                                value={agent.id}
+                                onSelect={() => {
+                                  setNewSale({ ...newSale, agent_id: agent.id });
+                                  setAgentSearchOpen(false);
+                                }}
+                              >
+                                {agent.name}
+                              </CommandItem>
+                            ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </CommandDialog>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -295,15 +317,7 @@ const Sales = () => {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Sale Price (TZS)</Label>
-                  <Input
-                    type="number"
-                    value={newSale.sale_price}
-                    onChange={(e) => setNewSale({ ...newSale, sale_price: e.target.value })}
-                    placeholder="0"
-                  />
-                </div>
+                {/* Sale Price input removed */}
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -338,15 +352,9 @@ const Sales = () => {
 
         {/* Stats */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-          <StatCard title="Total Sales" value={totalSales} icon={ShoppingCart} variant="primary" />
-          <StatCard title="Paid" value={paidSales} icon={CheckCircle} variant="success" />
-          <StatCard title="Unpaid" value={unpaidSales} icon={Clock} variant="warning" />
-          <StatCard
-            title="Revenue"
-            value={`TZS ${totalRevenue.toLocaleString()}`}
-            icon={DollarSign}
-            variant="info"
-          />
+          <StatCard title="Total Sales (Units)" value={totalSales} icon={ShoppingCart} variant="primary" />
+          <StatCard title="Paid (Units)" value={paidSales} icon={CheckCircle} variant="success" />
+          <StatCard title="Unpaid (Units)" value={unpaidSales} icon={Clock} variant="warning" />
         </div>
 
         {/* Filters */}
@@ -395,7 +403,7 @@ const Sales = () => {
                   <TableHead>Type</TableHead>
                   <TableHead>Package</TableHead>
                   <TableHead>Customer</TableHead>
-                  <TableHead>Price</TableHead>
+                  {/* Price column removed */}
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -416,9 +424,7 @@ const Sales = () => {
                         : "-"}
                     </TableCell>
                     <TableCell>{sale.customer_name || "-"}</TableCell>
-                    <TableCell>
-                      {sale.sale_price ? `TZS ${sale.sale_price.toLocaleString()}` : "-"}
-                    </TableCell>
+                    {/* Price cell removed */}
                     <TableCell>
                       <Badge variant={sale.is_paid ? "default" : "secondary"}>
                         {sale.is_paid ? "Paid" : "Unpaid"}

@@ -1,12 +1,23 @@
-import { Package, User, MapPin, Calendar, CheckCircle, Hand, Store, Phone, Mail } from "lucide-react";
+import { Package, User, MapPin, Calendar, CheckCircle, Hand, Store, Phone, Mail, MoreHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import {
+  ContextMenu,
+  ContextMenuTrigger,
+  ContextMenuContent,
+  ContextMenuItem,
+} from "@/components/ui/context-menu";
 
 interface SearchResultCardProps {
   type: "inventory" | "agent";
   data: any;
+  onClick?: () => void;
+  onView?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  onUpdateSale?: () => void;
 }
 
 const statusConfig = {
@@ -15,13 +26,14 @@ const statusConfig = {
   sold: { label: "Sold", icon: CheckCircle, color: "bg-success/10 text-success border-success/20" },
 };
 
-const SearchResultCard = ({ type, data }: SearchResultCardProps) => {
+const SearchResultCard = ({ type, data, onClick, onView, onEdit, onDelete, onUpdateSale }: SearchResultCardProps) => {
   if (type === "inventory") {
     const status = statusConfig[data.status as keyof typeof statusConfig];
     const StatusIcon = status?.icon || Package;
 
     return (
-      <Card className="p-6 animate-slide-up">
+      <ContextMenu>
+        <Card className="p-6 animate-slide-up" onClick={onClick}>
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="gradient-primary rounded-xl p-3">
@@ -78,7 +90,18 @@ const SearchResultCard = ({ type, data }: SearchResultCardProps) => {
               </div>
             )}
           </div>
-        </div>
+          <div className="absolute right-4 top-4">
+            <ContextMenuTrigger asChild>
+              <button className="p-2 rounded hover:bg-accent/10">
+                <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+              </button>
+            </ContextMenuTrigger>
+            <ContextMenuContent>
+              <ContextMenuItem onSelect={() => onView && onView()}>View</ContextMenuItem>
+              <ContextMenuItem onSelect={() => onEdit && onEdit()}>Edit</ContextMenuItem>
+              <ContextMenuItem onSelect={() => onDelete && onDelete()}>Delete</ContextMenuItem>
+            </ContextMenuContent>
+          </div>
 
         {data.sale && (
           <div className="mt-4 pt-4 border-t border-border">
@@ -100,12 +123,7 @@ const SearchResultCard = ({ type, data }: SearchResultCardProps) => {
                   <span className="font-medium">{data.sale.customer_name}</span>
                 </div>
               )}
-              {data.sale.sale_price && (
-                <div>
-                  <span className="text-muted-foreground">Price:</span>{" "}
-                  <span className="font-medium">TZS {data.sale.sale_price.toLocaleString()}</span>
-                </div>
-              )}
+              {/* Price display removed */}
             </div>
           </div>
         )}
@@ -115,8 +133,9 @@ const SearchResultCard = ({ type, data }: SearchResultCardProps) => {
 
   // Agent result
   return (
-    <Card className="p-6 animate-slide-up">
-      <div className="flex items-start gap-4">
+    <ContextMenu>
+      <Card className="p-6 animate-slide-up relative" onClick={onClick}>
+        <div className="flex items-start gap-4">
         <div className="gradient-success rounded-xl p-3">
           <User className="h-6 w-6 text-accent-foreground" />
         </div>
@@ -146,7 +165,14 @@ const SearchResultCard = ({ type, data }: SearchResultCardProps) => {
           </div>
         </div>
       </div>
-    </Card>
+      </Card>
+      <ContextMenuContent>
+        <ContextMenuItem onSelect={() => onView && onView()}>View</ContextMenuItem>
+        <ContextMenuItem onSelect={() => onEdit && onEdit()}>Edit</ContextMenuItem>
+        <ContextMenuItem onSelect={() => onDelete && onDelete()}>Delete</ContextMenuItem>
+        <ContextMenuItem onSelect={() => onUpdateSale && onUpdateSale()}>Update Sale</ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 };
 

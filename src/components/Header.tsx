@@ -15,6 +15,7 @@ const Header = () => {
     { to: "/inventory", label: "Inventory", icon: Package },
     { to: "/agents", label: "Agents", icon: Users },
     { to: "/sales", label: "Sales", icon: ShoppingCart },
+    { to: "/channel-management", label: "Channel Management", icon: LayoutDashboard },
   ];
 
   const isActive = (path: string) => location.pathname === path;
