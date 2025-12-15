@@ -110,6 +110,13 @@ const Sales = () => {
     });
   };
 
+  const handleSaleTypeChange = (value: string) => {
+    const isDvs = value === "dvs";
+    setNewSale({ ...newSale, sale_type: value as SaleType, inventory_id: isDvs ? "" : newSale.inventory_id });
+    // Force manual entry for DVS
+    setIsManualEntry(isDvs || isManualEntry);
+  };
+
   const handleAddSale = async (e: React.FormEvent) => {
     e.preventDefault();
     await createSale.mutateAsync({
@@ -180,7 +187,7 @@ const Sales = () => {
                       Enter smartcard & serial manually
                     </p>
                   </div>
-                  <Switch checked={isManualEntry} onCheckedChange={setIsManualEntry} />
+                  <Switch checked={isManualEntry} onCheckedChange={setIsManualEntry} disabled={newSale.sale_type === "dvs"} />
                 </div>
 
                 {isManualEntry ? (
@@ -285,7 +292,7 @@ const Sales = () => {
                     <Label>Sale Type</Label>
                     <Select
                       value={newSale.sale_type}
-                      onValueChange={(v) => setNewSale({ ...newSale, sale_type: v as SaleType })}
+                      onValueChange={(v) => handleSaleTypeChange(v)}
                     >
                       <SelectTrigger>
                         <SelectValue />

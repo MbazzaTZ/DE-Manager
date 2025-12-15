@@ -90,7 +90,8 @@ const SearchResultCard = ({ type, data, onClick, onView, onEdit, onDelete, onUpd
               </div>
             )}
           </div>
-          <div className="absolute right-4 top-4">
+        </div>
+        <div className="absolute right-4 top-4">
             <ContextMenuTrigger asChild>
               <button className="p-2 rounded hover:bg-accent/10">
                 <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
@@ -128,6 +129,7 @@ const SearchResultCard = ({ type, data, onClick, onView, onEdit, onDelete, onUpd
           </div>
         )}
       </Card>
+    </ContextMenu>
     );
   }
 
@@ -165,6 +167,15 @@ const SearchResultCard = ({ type, data, onClick, onView, onEdit, onDelete, onUpd
           </div>
         </div>
       </div>
+
+      <div className="absolute right-4 top-4">
+        <ContextMenuTrigger asChild>
+          <button className="p-2 rounded hover:bg-accent/10">
+            <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+          </button>
+        </ContextMenuTrigger>
+      </div>
+
       </Card>
       <ContextMenuContent>
         <ContextMenuItem onSelect={() => onView && onView()}>View</ContextMenuItem>
